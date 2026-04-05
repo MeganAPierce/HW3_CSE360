@@ -41,6 +41,141 @@ public class ReplyStoreBoundaryTests {
 
         DiscussionTests.clearDiscussionTables(db.getConnection());
         
+        test("Reply valid create succeeds", () -> {
+            Result<Post> post = postStore.createPost(
+                "megan",
+                "CSE360",
+                "Valid Title",
+                "Valid body"
+            );
+            assertTrue(post.isOk(), "Expected valid post creation to succeed first.");
+
+            Result<Reply> reply = replyStore.createReply(
+                post.getValue().getPostId(),
+                postStore,
+                "nick",
+                "Valid reply"
+            );
+            assertTrue(reply.isOk(), "Expected valid reply creation to succeed.");
+        });
+
+        test("Reply empty body rejected", () -> {
+            Result<Post> post = postStore.createPost(
+                "megan",
+                "CSE360",
+                "Valid Title",
+                "Valid body"
+            );
+            assertTrue(post.isOk(), "Expected valid post creation to succeed first.");
+
+            Result<Reply> reply = replyStore.createReply(
+                post.getValue().getPostId(),
+                postStore,
+                "nick",
+                ""
+            );
+            assertTrue(!reply.isOk(), "Expected empty reply body to be rejected.");
+        });
+
+        test("Reply whitespace-only body rejected", () -> {
+            Result<Post> post = postStore.createPost(
+                "megan",
+                "CSE360",
+                "Valid Title",
+                "Valid body"
+            );
+            assertTrue(post.isOk(), "Expected valid post creation to succeed first.");
+
+            Result<Reply> reply = replyStore.createReply(
+                post.getValue().getPostId(),
+                postStore,
+                "nick",
+                "   "
+            );
+            assertTrue(!reply.isOk(), "Expected whitespace-only reply body to be rejected.");
+        });
+
+        test("Reply body length 2000 accepted", () -> {
+            Result<Post> post = postStore.createPost(
+                "megan",
+                "CSE360",
+                "Valid Title",
+                "Valid body"
+            );
+            assertTrue(post.isOk(), "Expected valid post creation to succeed first.");
+
+            String body = "a".repeat(2000);
+            Result<Reply> reply = replyStore.createReply(
+                post.getValue().getPostId(),
+                postStore,
+                "nick",
+                body
+            );
+            assertTrue(reply.isOk(), "Expected reply body length 2000 to succeed.");
+        });
+
+        test("Reply body length 2001 rejected", () -> {
+            Result<Post> post = postStore.createPost(
+                "megan",
+                "CSE360",
+                "Valid Title",
+                "Valid body"
+            );
+            assertTrue(post.isOk(), "Expected valid post creation to succeed first.");
+
+            String body = "a".repeat(2001);
+            Result<Reply> reply = replyStore.createReply(
+                post.getValue().getPostId(),
+                postStore,
+                "nick",
+                body
+            );
+            assertTrue(!reply.isOk(), "Expected reply body length 2001 to be rejected.");
+        });
+
+        test("Reply to nonexistent post rejected", () -> {
+            Result<Reply> reply = replyStore.createReply(
+                "missing-post-id",
+                postStore,
+                "nick",
+                "This should fail"
+            );
+            assertTrue(!reply.isOk(), "Expected reply to nonexistent post to fail.");
+        });
+
+        test("Read nonexistent reply ID fails safely", () -> {
+            Result<Reply> result = replyStore.readReplyById("missing-reply-id");
+            assertTrue(!result.isOk(), "Expected nonexistent reply ID to fail.");
+        });
+
+        test("Read blank reply ID fails safely", () -> {
+            Result<Reply> result = replyStore.readReplyById("   ");
+            assertTrue(!result.isOk(), "Expected blank reply ID to fail.");
+        });
+
+        test("Cannot reply to deleted post", () -> {
+            Result<Post> post = postStore.createPost(
+                "megan",
+                "CSE360",
+                "Delete Test",
+                "Body"
+            );
+            assertTrue(post.isOk(), "Expected valid post creation to succeed first.");
+
+            Result<Void> deleted = postStore.softDeletePostById(post.getValue().getPostId());
+            assertTrue(deleted.isOk(), "Expected post deletion to succeed.");
+
+            Result<Reply> reply = replyStore.createReply(
+                post.getValue().getPostId(),
+                postStore,
+                "nick",
+                "Reply after delete"
+            );
+            assertTrue(!reply.isOk(), "Expected reply to deleted post to be rejected.");
+        });
+
+        printSummary();
+
     }
 
     /***
