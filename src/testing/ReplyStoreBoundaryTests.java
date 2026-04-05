@@ -52,7 +52,15 @@ public class ReplyStoreBoundaryTests {
      * @throws AssertionError (through assertTrue)
      */
     private static void test(String name, Runnable r){
-
+        try {
+            r.run();
+            System.out.println("PASS: " + name);
+            passed ++;
+        } catch (Throwable t) {
+            System.out.println("FAIL: " + name);
+            System.out.println(" " + t.getMessage());
+            failed ++;
+        }
     }
 
     /***
