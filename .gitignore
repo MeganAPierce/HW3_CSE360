@@ -1,0 +1,37 @@
+
+# Eclipse
+
+.project
+
+.classpath
+
+.settings/
+
+
+
+# Java build output
+
+bin/
+
+target/
+
+*.class
+
+
+
+# Logs
+
+*.log
+
+
+
+# OS junk
+
+.DS_Store
+
+Thumbs.db
+
+
+
+pom.xml
+.vscode/
