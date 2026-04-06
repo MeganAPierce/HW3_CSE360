@@ -39,7 +39,7 @@ public class ReplyStoreBoundaryTests {
         PostStore postStore = new PostStore(db);
         ReplyStore replyStore = new ReplyStore(db);
 
-        DiscussionTests.clearDiscussionTables(db.getConnection());
+        clearDiscussionTables(db);
         
         test("Reply valid create succeeds", () -> {
             Result<Post> post = postStore.createPost(
@@ -178,6 +178,16 @@ public class ReplyStoreBoundaryTests {
 
     }
 
+    /***
+     * Method: clearDiscussionTables()
+     * @param db
+     * @throws Exception
+     */
+    private static void clearDiscussionTables(Database db) throws Exception {
+        db.getConnection().createStatement().executeUpdate("DELETE FROM REPLIES");
+        db.getConnection().createStatement().executeUpdate("DELETE FROM POSTS");
+    }
+    
     /***
      * Method: test()
      * Will throw an AssertionError if a condition is false
