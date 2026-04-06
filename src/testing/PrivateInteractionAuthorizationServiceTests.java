@@ -7,12 +7,28 @@ import entityClasses.User;
 
 /**
  * Tests for the PrivateInteractionAuthorizationService prototype.
+ * 
+ * This test class validates whether users are correctly allowed or denied access to 
+ * create private posts, view private posts, reply to private posts, and modify private replies.
+ * 
+ * The goal for these tests is to confirm that the authorization service enforces the expected
+ * access-control rules for the TP3 prototype.
+ * 
+ * @author Megan Pierce
  */
 public class PrivateInteractionAuthorizationServiceTests {
 
     private static int passed = 0;
     private static int failed = 0;
 
+    /**
+     * main()
+     * Runs all authorization prototype tests.
+     * 
+     * This method creates prototype objects and validates both positve and negative auth cases.
+     * 
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         PrivateInteractionAuthorizationService service = new PrivateInteractionAuthorizationService();
 
@@ -140,11 +156,21 @@ public class PrivateInteractionAuthorizationServiceTests {
         printSummary();
     }
 
+    /**
+     * Functional interface used so individual tests can throw exceptions without
+     * forcing repetitive try/catch blocks inside each test case
+     */
     @FunctionalInterface
     private interface ThrowingRunnable {
         void run() throws Exception;
     }
 
+    /**
+     * test()
+     * Runs an individual test case and records whether it passed or failed
+     * @param name the name of the test case
+     * @param r the test logic to execute
+     */
     private static void test(String name, ThrowingRunnable r) {
         try {
             r.run();
@@ -157,10 +183,21 @@ public class PrivateInteractionAuthorizationServiceTests {
         }
     }
 
+    /**
+     * assertTrue()
+     * Verifies if the condition is true or false
+     * 
+     * @param condition condition being tested
+     * @param message failure message to display if false
+     */
     private static void assertTrue(boolean condition, String message) {
         if (!condition) throw new AssertionError(message);
     }
 
+    /**
+     * printSummary()
+     * Prints out a summary of the test results
+     */
     private static void printSummary() {
         System.out.println("\nPrivateInteractionAuthorizationServiceTests complete.");
         System.out.println("Passed: " + passed);
