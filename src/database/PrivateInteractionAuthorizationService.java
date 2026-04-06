@@ -51,7 +51,7 @@ public class PrivateInteractionAuthorizationService {
      * @return true if viewer is author or intended recipient, false otherwise
      */
     public boolean canViewPrivatePost(User viewer, StaffPrivatePost post){
-        if(viewer == null) return false;
+        if(viewer == null || post == null) return false;
         if(viewer.getUserName() == null) return false;
 
         String viewerName = viewer.getUserName();
